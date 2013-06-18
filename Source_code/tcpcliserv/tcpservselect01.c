@@ -29,6 +29,7 @@ main(int argc, char **argv)
 		client[i] = -1;			/* -1 indicates available entry */
 	FD_ZERO(&allset);
 	FD_SET(listenfd, &allset);
+	printf("THne value of FD_SETSIZE = %d\n",FD_SETSIZE);
 /* end fig01 */
 
 /* include fig02 */
