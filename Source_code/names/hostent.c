@@ -7,6 +7,10 @@ main(int argc, char **argv)
 	char			str[INET_ADDRSTRLEN];
 	struct hostent	*hptr;
 
+    if(argc < 2){
+        printf("Usage: ./hostent <site1> <site2> ... \n");
+        exit(0);
+    }
 	while (--argc > 0) {
 		ptr = *++argv;
 		if ( (hptr = gethostbyname(ptr)) == NULL) {
