@@ -46,14 +46,25 @@ pr_ipv4(char **listptr)
 	struct hostent	*hptr, hent;
 	char			buf[8192];
 	int				h_errno;
+    struct hostent *result;
+    result = malloc(sizeof(struct hostent));
+    if(result == NULL){
+        perror("Malloc\n");
+        exit(0);
+    }
 
 	for ( ; *listptr != NULL; listptr++) {
 		inaddr = *((struct in_addr *) (*listptr));
-		printf("	IPv4 address: %s", Inet_ntoa(inaddr));
+		printf("	IPv4 address: %s", inet_ntoa(inaddr));
 
-		if ( (hptr = gethostbyaddr_r((char *) &inaddr, sizeof(struct in_addr),
-									 AF_INET, &hent,
-									 buf, sizeof(buf), &h_errno)) == NULL)
+		if ( (hptr = gethostbyaddr_r((char *) &inaddr, 
+                                     sizeof(struct in_addr),
+									 AF_INET, 
+                                     &hent,
+									 buf, 
+                                     sizeof(buf), 
+                                     &result,
+                                     &h_errno)) == NULL)
 			printf("    (gethostbyaddr failed: %s)\n", hstrerror(h_errno));
 		else if (hptr->h_name != NULL)
 			printf("    name = %s\n", hptr->h_name);
