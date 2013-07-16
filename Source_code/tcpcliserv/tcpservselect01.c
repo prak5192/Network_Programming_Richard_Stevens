@@ -17,7 +17,8 @@ main(int argc, char **argv)
 	bzero(&servaddr, sizeof(servaddr));
 	servaddr.sin_family      = AF_INET;
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	servaddr.sin_port        = htons(SERV_PORT);
+//	servaddr.sin_port        = htons(SERV_PORT);
+	servaddr.sin_port        = htons(9827);
 
 	Bind(listenfd, (SA *) &servaddr, sizeof(servaddr));
 
@@ -29,7 +30,7 @@ main(int argc, char **argv)
 		client[i] = -1;			/* -1 indicates available entry */
 	FD_ZERO(&allset);
 	FD_SET(listenfd, &allset);
-	printf("THne value of FD_SETSIZE = %d\n",FD_SETSIZE);
+	printf("The value of FD_SETSIZE = %d\n",FD_SETSIZE);
 /* end fig01 */
 
 /* include fig02 */
@@ -37,15 +38,39 @@ main(int argc, char **argv)
 		rset = allset;		/* structure assignment */
 		nready = Select(maxfd+1, &rset, NULL, NULL, NULL);
 
+        int a = 0;
+        int b = 0;
+        for(a = 3; a < FD_SETSIZE; a++){
+            if(FD_ISSET(a,&rset)){
+                printf("1 ");
+            } else {
+                printf("0 ");
+            }
+            b++;
+            if(b == 16){
+                printf("\n");
+                b = 0;
+                break; // Not expecting more than 16 client request at a time 
+            }
+        }
+
+
+
 		if (FD_ISSET(listenfd, &rset)) {	/* new client connection */
+            printf("==============STEP1================\n");
+            
 			clilen = sizeof(cliaddr);
 			connfd = Accept(listenfd, (SA *) &cliaddr, &clilen);
-#ifdef	NOTDEF
+# if 1
+            char str[100];
+            printf("new client: %s, port %hu => Client fd - %d\n",
+                   inet_ntop(AF_INET, (struct sockaddr *)&cliaddr.sin_addr, str, 100),ntohs(cliaddr.sin_port), listen);
+#endif
+/*
 			printf("new client: %s, port %d\n",
 					Inet_ntop(AF_INET, &cliaddr.sin_addr, 4, NULL),
 					ntohs(cliaddr.sin_port));
-#endif
-
+*/
 			for (i = 0; i < FD_SETSIZE; i++)
 				if (client[i] < 0) {
 					client[i] = connfd;	/* save descriptor */
@@ -74,6 +99,7 @@ main(int argc, char **argv)
 					FD_CLR(sockfd, &allset);
 					client[i] = -1;
 				} else
+                    printf("The data read from socket [ %s ] == Socket fd -> %d\n", buf, sockfd);
 					Writen(sockfd, buf, n);
 
 				if (--nready <= 0)
