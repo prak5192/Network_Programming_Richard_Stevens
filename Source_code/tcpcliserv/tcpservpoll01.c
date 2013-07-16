@@ -1,7 +1,7 @@
 /* include fig01 */
 #include	"unp.h"
 #include	<limits.h>		/* for OPEN_MAX */
-
+#define OPEN_MAX 1024
 int
 main(int argc, char **argv)
 {
@@ -33,7 +33,9 @@ main(int argc, char **argv)
 
 /* include fig02 */
 	for ( ; ; ) {
+        printf("==================STEP1================\n");
 		nready = Poll(client, maxi+1, INFTIM);
+        printf("==================STEP2================\n");
 
 		if (client[0].revents & POLLRDNORM) {	/* new client connection */
 			clilen = sizeof(cliaddr);
